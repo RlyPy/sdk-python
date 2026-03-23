@@ -12,6 +12,8 @@ class Payments(Resource):
                description: Optional[str] = None,
                customer_id: Optional[str] = None,
                redirect_url: Optional[str] = None,
+               success_redirect_url: Optional[str] = None,
+               fail_redirect_url: Optional[str] = None,
                metadata: Optional[Dict[str, Any]] = None,
                terminal_id: Optional[str] = None) -> Dict[str, Any]:
         """Создать новый платеж.
@@ -24,6 +26,8 @@ class Payments(Resource):
             description: Описание платежа.
             customer_id: Идентификатор покупателя (например, email или ID).
             redirect_url: URL для перенаправления пользователя после оплаты.
+            success_redirect_url: URL перенаправления при успешной оплате.
+            fail_redirect_url: URL перенаправления при неуспешной оплате (expired/canceled).
             metadata: Дополнительные метаданные платежа (словарь).
             terminal_id: ID кассы (необязательно, если используется API ключ конкретной кассы).
         """
@@ -40,6 +44,10 @@ class Payments(Resource):
             data["customer_id"] = customer_id
         if redirect_url:
             data["redirect_url"] = redirect_url
+        if success_redirect_url:
+            data["success_redirect_url"] = success_redirect_url
+        if fail_redirect_url:
+            data["fail_redirect_url"] = fail_redirect_url
         if metadata:
             data["metadata"] = metadata
         if terminal_id:
