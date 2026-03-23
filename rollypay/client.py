@@ -26,7 +26,7 @@ class RollyPayClient:
         self._session.headers.update({
             "X-API-Key": self.api_key,
             "Content-Type": "application/json",
-            "User-Agent": "rollypay-python-sdk/0.1.2"
+            "User-Agent": "rollypay-python-sdk/0.1.4"
         })
 
         # Инициализация ресурсов

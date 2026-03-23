@@ -7,7 +7,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), encoding="utf-8"
 
 setup(
     name="rollypay",
-    version="0.1.3",
+    version="0.1.4",
     description="Официальный Python SDK для платежной системы RollyPay",
     long_description=long_description,
     long_description_content_type="text/markdown",
