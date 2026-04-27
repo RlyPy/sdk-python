@@ -1,24 +1,31 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
+
 from .base import Resource
+
 
 class Misc(Resource):
     """Разные ресурсы."""
 
-    def me(self) -> Dict[str, Any]:
+    def me(self) -> dict[str, Any]:
         """Получить информацию о текущем пользователе/ключе."""
         return self._get("me")
 
-    def balance(self, terminal_id: str) -> Dict[str, Any]:
-        """Получить баланс кассы."""
-        return self._get("balance", params={"terminal_id": terminal_id})
+    def balance(self, terminal_id: str | None = None) -> dict[str, Any]:
+        """Получить баланс кассы.
 
-    def rate(self, terminal_id: Optional[str] = None) -> Dict[str, Any]:
+        Args:
+            terminal_id: ID кассы. Необязателен при API-ключе конкретной кассы.
+        """
+        params = self._compact({"terminal_id": terminal_id})
+        return self._get("balance", params=params)
+
+    def rate(self, terminal_id: str | None = None) -> dict[str, Any]:
         """Получить текущий курс обмена.
-        
+
         Args:
             terminal_id: Опциональный ID кассы для применения специфичной наценки.
         """
-        params = {}
-        if terminal_id:
-            params["terminal_id"] = terminal_id
+        params = self._compact({"terminal_id": terminal_id})
         return self._get("rate", params=params)

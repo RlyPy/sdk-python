@@ -1,20 +1,25 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+import builtins
+from typing import Any
+
 from .base import Resource
+
 
 class Terminals(Resource):
     """Ресурс для управления кассами (терминалами)."""
 
-    def list(self) -> List[Dict[str, Any]]:
+    def list(self) -> builtins.list[dict[str, Any]]:
         """Получить список всех касс аккаунта."""
         return self._get("terminals")
 
-    def get(self, terminal_id: str) -> Dict[str, Any]:
+    def get(self, terminal_id: str) -> dict[str, Any]:
         """Получить информацию о конкретной кассе по ID."""
         return self._get(f"terminals/{terminal_id}")
 
-    def update(self, terminal_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update(self, terminal_id: str, data: dict[str, Any]) -> dict[str, Any]:
         """Обновить настройки кассы.
-        
+
         Args:
             terminal_id: ID кассы для обновления.
             data: Словарь с обновляемыми полями:
@@ -27,10 +32,10 @@ class Terminals(Resource):
         """
         return self._put(f"terminals/{terminal_id}", json=data)
 
-    def rotate_api_key(self, terminal_id: str) -> Dict[str, str]:
+    def rotate_api_key(self, terminal_id: str) -> dict[str, str]:
         """Сгенерировать новый API ключ для кассы. Возвращает новый ключ."""
         return self._post(f"terminals/{terminal_id}/rotate-api-key")
 
-    def get_providers(self, terminal_id: str) -> List[Dict[str, Any]]:
+    def get_providers(self, terminal_id: str) -> builtins.list[dict[str, Any]]:
         """Получить список провайдеров, включенных для кассы."""
         return self._get(f"terminals/{terminal_id}/providers")
