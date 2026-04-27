@@ -1,26 +1,29 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any
+
 from .base import Resource
+
 
 class Stats(Resource):
     """Ресурс для статистики и финансов продавца."""
 
-    def overview(self, terminal_id: str) -> Dict[str, Any]:
+    def overview(self, terminal_id: str) -> dict[str, Any]:
         """Получить обзорную статистику по кассе."""
         return self._get("merchant/stats/overview", params={"terminal_id": terminal_id})
 
-    def finance_summary(self, terminal_id: Optional[str] = None) -> Dict[str, Any]:
+    def finance_summary(self, terminal_id: str | None = None) -> dict[str, Any]:
         """Получить финансовую сводку."""
         params = {}
         if terminal_id:
             params["terminal_id"] = terminal_id
         return self._get("merchant/finance/summary", params=params)
 
-    def timeseries(self, 
-                   metric: str, 
-                   interval: str, 
-                   terminal_id: Optional[str] = None) -> Dict[str, Any]:
+    def timeseries(
+        self, metric: str, interval: str, terminal_id: str | None = None
+    ) -> dict[str, Any]:
         """Получить статистику во времени (графики).
-        
+
         Args:
             metric: Метрика (например, "volume", "count").
             interval: Интервал (например, "day", "hour").

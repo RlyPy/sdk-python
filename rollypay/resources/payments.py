@@ -1,21 +1,30 @@
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from decimal import Decimal
+from typing import Any, Union
+
 from .base import Resource
+
+AmountFilter = Union[str, Decimal, float, int]
+
 
 class Payments(Resource):
     """Ресурс для управления платежами."""
 
-    def create(self, 
-               amount: str,
-               order_id: str,
-               payment_currency: str = "RUB",
-               payment_method: Optional[str] = None,
-               description: Optional[str] = None,
-               customer_id: Optional[str] = None,
-               redirect_url: Optional[str] = None,
-               success_redirect_url: Optional[str] = None,
-               fail_redirect_url: Optional[str] = None,
-               metadata: Optional[Dict[str, Any]] = None,
-               terminal_id: Optional[str] = None) -> Dict[str, Any]:
+    def create(
+        self,
+        amount: str,
+        order_id: str,
+        payment_currency: str = "RUB",
+        payment_method: str | None = None,
+        description: str | None = None,
+        customer_id: str | None = None,
+        redirect_url: str | None = None,
+        success_redirect_url: str | None = None,
+        fail_redirect_url: str | None = None,
+        metadata: dict[str, Any] | None = None,
+        terminal_id: str | None = None,
+    ) -> dict[str, Any]:
         """Создать новый платеж.
 
         Args:
@@ -31,97 +40,100 @@ class Payments(Resource):
             metadata: Дополнительные метаданные платежа (словарь).
             terminal_id: ID кассы (необязательно, если используется API ключ конкретной кассы).
         """
-        data = {
-            "amount": amount,
-            "order_id": order_id,
-            "payment_currency": payment_currency,
-        }
-        if payment_method:
-            data["payment_method"] = payment_method
-        if description:
-            data["description"] = description
-        if customer_id:
-            data["customer_id"] = customer_id
-        if redirect_url:
-            data["redirect_url"] = redirect_url
-        if success_redirect_url:
-            data["success_redirect_url"] = success_redirect_url
-        if fail_redirect_url:
-            data["fail_redirect_url"] = fail_redirect_url
-        if metadata:
-            data["metadata"] = metadata
-        if terminal_id:
-            data["terminal_id"] = terminal_id
-            
+        data = self._compact(
+            {
+                "amount": amount,
+                "order_id": order_id,
+                "payment_currency": payment_currency,
+                "payment_method": payment_method,
+                "description": description,
+                "customer_id": customer_id,
+                "redirect_url": redirect_url,
+                "success_redirect_url": success_redirect_url,
+                "fail_redirect_url": fail_redirect_url,
+                "metadata": metadata,
+                "terminal_id": terminal_id,
+            }
+        )
+
         return self._post("payments", json=data)
 
-    def get(self, payment_id: str) -> Dict[str, Any]:
+    def get(self, payment_id: str) -> dict[str, Any]:
         """Получить детали платежа по ID."""
         return self._get(f"payments/{payment_id}")
 
-    def list(self, 
-             limit: int = 20,
-             page: int = 1,
-             account_id: Optional[str] = None,
-             terminal_id: Optional[str] = None,
-             order_id: Optional[str] = None,
-             status: Optional[str] = None,
-             date_from: Optional[str] = None,
-             date_to: Optional[str] = None,
-             amount_from: Optional[float] = None,
-             amount_to: Optional[float] = None,
-             search: Optional[str] = None) -> Dict[str, Any]:
+    def list(
+        self,
+        limit: int = 20,
+        page: int = 1,
+        account_id: str | None = None,
+        terminal_id: str | None = None,
+        order_id: str | None = None,
+        status: str | None = None,
+        date_from: str | None = None,
+        date_to: str | None = None,
+        amount_from: AmountFilter | None = None,
+        amount_to: AmountFilter | None = None,
+        search: str | None = None,
+    ) -> dict[str, Any]:
         """Получить список платежей с фильтрацией.
-        
+
         Args:
             limit: Количество записей на странице.
             page: Номер страницы.
             account_id: ID аккаунта (для админов).
             terminal_id: ID кассы.
             order_id: ID заказа.
-            status: Статус платежа (например, "PAID", "CREATED").
+            status: Статус платежа (например, "created", "paid", "expired").
             date_from: Дата начала (ISO 8601).
             date_to: Дата окончания (ISO 8601).
             amount_from: Минимальная сумма.
             amount_to: Максимальная сумма.
             search: Строка поиска.
         """
-        params = {
-            "limit": limit,
-            "page": page,
-        }
-        if account_id: params["account_id"] = account_id
-        if terminal_id: params["terminal_id"] = terminal_id
-        if order_id: params["order_id"] = order_id
-        if status: params["status"] = status
-        if date_from: params["from"] = date_from
-        if date_to: params["to"] = date_to
-        if amount_from is not None: params["amount_from"] = amount_from
-        if amount_to is not None: params["amount_to"] = amount_to
-        if search: params["search"] = search
-        
+        params = self._compact(
+            {
+                "limit": limit,
+                "page": page,
+                "account_id": account_id,
+                "terminal_id": terminal_id,
+                "order_id": order_id,
+                "status": status,
+                "from": date_from,
+                "to": date_to,
+                "amount_from": amount_from,
+                "amount_to": amount_to,
+                "search": search,
+            }
+        )
+
         return self._get("payments", params=params)
 
-    def stats(self, 
-              account_id: Optional[str] = None,
-              terminal_id: Optional[str] = None,
-              order_id: Optional[str] = None,
-              status: Optional[str] = None,
-              date_from: Optional[str] = None,
-              date_to: Optional[str] = None,
-              amount_from: Optional[float] = None,
-              amount_to: Optional[float] = None,
-              search: Optional[str] = None) -> Dict[str, Any]:
+    def stats(
+        self,
+        account_id: str | None = None,
+        terminal_id: str | None = None,
+        order_id: str | None = None,
+        status: str | None = None,
+        date_from: str | None = None,
+        date_to: str | None = None,
+        amount_from: AmountFilter | None = None,
+        amount_to: AmountFilter | None = None,
+        search: str | None = None,
+    ) -> dict[str, Any]:
         """Получить статистику по платежам (суммы, количество и т.д.)."""
-        params = {}
-        if account_id: params["account_id"] = account_id
-        if terminal_id: params["terminal_id"] = terminal_id
-        if order_id: params["order_id"] = order_id
-        if status: params["status"] = status
-        if date_from: params["from"] = date_from
-        if date_to: params["to"] = date_to
-        if amount_from is not None: params["amount_from"] = amount_from
-        if amount_to is not None: params["amount_to"] = amount_to
-        if search: params["search"] = search
-        
+        params = self._compact(
+            {
+                "account_id": account_id,
+                "terminal_id": terminal_id,
+                "order_id": order_id,
+                "status": status,
+                "from": date_from,
+                "to": date_to,
+                "amount_from": amount_from,
+                "amount_to": amount_to,
+                "search": search,
+            }
+        )
+
         return self._get("payments/stats", params=params)
